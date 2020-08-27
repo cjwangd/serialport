@@ -96,6 +96,7 @@
                                 <copy todir="${dist}/jre/bin/" overwrite="true" >
                                     <fileset dir="${project.basedir}/lib/x86/" erroronmissingdir="false">
                                         <include name="*.dll"></include>
+                                        <include name="*.so"></include>
                                     </fileset>
                                 </copy>
                                 <copy file="${project.basedir}/cmd/start.cmd" tofile="${dist}/start.cmd" />
