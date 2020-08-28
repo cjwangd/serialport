@@ -1,4 +1,6 @@
 echo off
-echo %~dp0
+
 set cwd=%~dp0
-start %cwd%\jre\bin\javaw.exe -jar %cwd%\serialport-1.0.RELEASE.jar
+set path=%cwd%jre\bin;%path%
+cd %cwd%
+start javaw.exe -jar serialport-1.0.RELEASE.jar
