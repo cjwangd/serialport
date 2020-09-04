@@ -78,6 +78,46 @@ public class SerialPortManager {
     }
 
     /**
+     *
+     * @param portName 串口
+     * @param baudrate 波特率
+     * @param parity 校验位
+     * @param data 数据位
+     * @param stop 停止位
+     * @return
+     * @throws PortInUseException
+     */
+
+
+    public static final SerialPort openPort(String portName, int baudrate,int parity,int data ,int stop) throws PortInUseException {
+        try {
+            // 通过端口名识别端口
+            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
+            // 打开端口，并给端口名字和一个timeout（打开操作的超时时间）
+            CommPort commPort = portIdentifier.open(portName, 2000);
+            // 判断是不是串口
+            if (commPort instanceof SerialPort) {
+                SerialPort serialPort = (SerialPort) commPort;
+                try {
+                    // 设置一下串口的波特率等参数
+                    // 数据位：8
+                    // 停止位：1
+                    // 校验位：None
+                    serialPort.setSerialPortParams(baudrate, data, stop,parity);
+                } catch (UnsupportedCommOperationException e) {
+                    e.printStackTrace();
+                }
+                return serialPort;
+            }
+        } catch (NoSuchPortException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+    /**
      * 关闭串口
      *
      * @param serialport 待关闭的串口对象

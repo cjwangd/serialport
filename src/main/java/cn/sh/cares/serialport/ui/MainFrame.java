@@ -7,24 +7,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import cn.sh.cares.serialport.manager.SerialPortManager;
+import cn.sh.cares.serialport.model.ComboItem;
 import cn.sh.cares.serialport.utils.ByteUtils;
 import cn.sh.cares.serialport.utils.ShowUtils;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 主界面
@@ -33,10 +27,11 @@ import gnu.io.SerialPort;
 @SuppressWarnings("all")
 public class MainFrame extends JFrame {
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
     // 程序界面宽度
     public final int WIDTH = 530;
     // 程序界面高度
-    public final int HEIGHT = 390;
+    public final int HEIGHT = 495;
 
     // 数据显示区
     private JTextArea mDataView = new JTextArea();
@@ -46,11 +41,24 @@ public class MainFrame extends JFrame {
     private JPanel mSerialPortPanel = new JPanel();
     private JLabel mSerialPortLabel = new JLabel("串口");
     private JLabel mBaudrateLabel = new JLabel("波特率");
+    private JLabel mParityLabel = new JLabel("校验位");
+    private JLabel mDataBitLabel = new JLabel("数据位");
+    private JLabel mStopBitLabel = new JLabel("停止位");
     private JComboBox mCommChoice = new JComboBox();
-    private JComboBox mBaudrateChoice = new JComboBox();
+    private JTextField mBaudrateChoice = new JTextField();
     private ButtonGroup mDataChoice = new ButtonGroup();
     private JRadioButton mDataASCIIChoice = new JRadioButton("ASCII", true);
     private JRadioButton mDataHexChoice = new JRadioButton("Hex");
+
+    // 数据位
+    private JComboBox mDataBitChoice = new JComboBox();
+
+    // 校验位
+    private JComboBox mParityBitChoice = new JComboBox();
+    // 停止位
+
+    private JComboBox mStopBitChoice = new JComboBox();
+
 
     // 操作面板
     private JPanel mOperatePanel = new JPanel();
@@ -98,7 +106,7 @@ public class MainFrame extends JFrame {
 
         // 串口设置
         mSerialPortPanel.setBorder(BorderFactory.createTitledBorder("串口设置"));
-        mSerialPortPanel.setBounds(10, 220, 170, 130);
+        mSerialPortPanel.setBounds(10, 220, 170, 235);
         mSerialPortPanel.setLayout(null);
         add(mSerialPortPanel);
 
@@ -114,34 +122,74 @@ public class MainFrame extends JFrame {
         mBaudrateLabel.setBounds(10, 60, 40, 20);
         mSerialPortPanel.add(mBaudrateLabel);
 
-        mBaudrateChoice.setFocusable(false);
+        mBaudrateChoice.setEnabled(true);
         mBaudrateChoice.setBounds(60, 60, 100, 20);
+        mBaudrateChoice.setText("600");
         mSerialPortPanel.add(mBaudrateChoice);
 
-        mDataASCIIChoice.setBounds(20, 95, 55, 20);
-        mDataHexChoice.setBounds(95, 95, 55, 20);
+
+        mParityLabel.setForeground(Color.gray);
+        mParityLabel.setBounds(10, 95, 40, 20);
+        mSerialPortPanel.add(mParityLabel);
+
+
+        mParityBitChoice.addItem(new ComboItem("EVEN",SerialPort.PARITY_EVEN));
+        mParityBitChoice.addItem(new ComboItem("MARK",SerialPort.PARITY_MARK));
+        mParityBitChoice.addItem(new ComboItem("NONE",SerialPort.PARITY_NONE));
+        mParityBitChoice.addItem(new ComboItem("ODD",SerialPort.PARITY_ODD));
+        mParityBitChoice.addItem(new ComboItem("SPACE",SerialPort.PARITY_SPACE));
+        mParityBitChoice.setFocusable(false);
+        mParityBitChoice.setBounds(60, 95, 100, 20);
+        mSerialPortPanel.add(mParityBitChoice);
+
+
+        mDataBitLabel.setForeground(Color.gray);
+        mDataBitLabel.setBounds(10, 130, 40, 20);
+        mSerialPortPanel.add(mDataBitLabel);
+        mDataBitChoice.addItem(new ComboItem("5",SerialPort.DATABITS_5));
+        mDataBitChoice.addItem(new ComboItem("6",SerialPort.DATABITS_6));
+        mDataBitChoice.addItem(new ComboItem("7",SerialPort.DATABITS_7));
+        mDataBitChoice.addItem(new ComboItem("8",SerialPort.DATABITS_8));
+        mDataBitChoice.setFocusable(false);
+        mDataBitChoice.setBounds(60, 130, 100, 20);
+        mSerialPortPanel.add(mDataBitChoice);
+
+        mStopBitLabel.setForeground(Color.gray);
+        mStopBitLabel.setBounds(10, 165, 40, 20);
+        mSerialPortPanel.add(mStopBitLabel);
+        mStopBitChoice.addItem(new ComboItem("1",SerialPort.STOPBITS_1));
+        mStopBitChoice.addItem(new ComboItem("2",SerialPort.STOPBITS_2));
+        mStopBitChoice.addItem(new ComboItem("1-5",SerialPort.STOPBITS_1_5));
+        mStopBitChoice.setFocusable(false);
+        mStopBitChoice.setBounds(60, 165, 100, 20);
+        mSerialPortPanel.add(mStopBitChoice);
+
+
+        mDataASCIIChoice.setBounds(20, 200, 55, 20);
+        mDataHexChoice.setBounds(95, 200, 55, 20);
         mDataChoice.add(mDataASCIIChoice);
         mDataChoice.add(mDataHexChoice);
         mSerialPortPanel.add(mDataASCIIChoice);
         mSerialPortPanel.add(mDataHexChoice);
 
+
         // 操作
         mOperatePanel.setBorder(BorderFactory.createTitledBorder("操作"));
-        mOperatePanel.setBounds(200, 220, 315, 130);
+        mOperatePanel.setBounds(200, 220, 315, 235);
         mOperatePanel.setLayout(null);
         add(mOperatePanel);
 
-        mDataInput.setBounds(25, 25, 265, 50);
+        mDataInput.setBounds(25, 25, 265, 120);
         mDataInput.setLineWrap(true);
         mDataInput.setWrapStyleWord(true);
         mOperatePanel.add(mDataInput);
 
         mSerialPortOperate.setFocusable(false);
-        mSerialPortOperate.setBounds(45, 95, 90, 20);
+        mSerialPortOperate.setBounds(45, 195, 90, 20);
         mOperatePanel.add(mSerialPortOperate);
 
         mSendData.setFocusable(false);
-        mSendData.setBounds(180, 95, 90, 20);
+        mSendData.setBounds(180, 195, 90, 20);
         mOperatePanel.add(mSendData);
     }
 
@@ -159,11 +207,6 @@ public class MainFrame extends JFrame {
             }
         }
 
-        mBaudrateChoice.addItem("9600");
-        mBaudrateChoice.addItem("19200");
-        mBaudrateChoice.addItem("38400");
-        mBaudrateChoice.addItem("57600");
-        mBaudrateChoice.addItem("115200");
     }
 
     /**
@@ -233,15 +276,36 @@ public class MainFrame extends JFrame {
         String commName = (String) mCommChoice.getSelectedItem();
         // 获取波特率，默认为9600
         int baudrate = 9600;
-        String bps = (String) mBaudrateChoice.getSelectedItem();
-        baudrate = Integer.parseInt(bps);
+
+        // 获取停止位
+        int stop = (int) ((ComboItem)mStopBitChoice.getSelectedItem()).getValue();
+
+        // 获取数据位
+        int data = (int) ((ComboItem)mDataBitChoice.getSelectedItem()).getValue();
+
+        // 获取校验位
+        int parity = (int) ((ComboItem)mParityBitChoice.getSelectedItem()).getValue();
+
+        logger.info("串口=[{}],波特率=[{}],校验位=[{}],数据位=[{}],停止位=[{}],",commName,baudrate,parity,data,stop);
+
+        String bps = (String) mBaudrateChoice.getText();
+        try {
+            baudrate = Integer.parseInt(bps);
+        } catch (Exception e) {
+            ShowUtils.warningMessage("波特率必须为正整数！");
+            mBaudrateChoice.setText("");
+            return;
+        }
+
+        logger.info("串口=[{}],波特率=[{}],校验位=[{}],数据位=[{}],停止位=[{}],",commName,baudrate,parity,data,stop);
 
         // 检查串口名称是否获取正确
         if (commName == null || commName.equals("")) {
             ShowUtils.warningMessage("没有搜索到有效串口！");
+            return;
         } else {
             try {
-                mSerialport = SerialPortManager.openPort(commName, baudrate);
+                mSerialport = SerialPortManager.openPort(commName, baudrate,parity,data,stop);
                 if (mSerialport != null) {
                     mDataView.setText("串口已打开" + "\r\n");
                     mSerialPortOperate.setText("关闭串口");
