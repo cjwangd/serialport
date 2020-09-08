@@ -91,7 +91,7 @@
                                 <mkdir dir="${dist}" />
                                 <copy file="target/${app-name}.jar" tofile="${dist}/${app-name}.jar" />
                                 <copy todir="${jre}" overwrite="true" >
-                                    <fileset dir="D:\soft\Java\JDK8_32\jre" erroronmissingdir="false"></fileset>
+                                    <fileset dir="C:\soft\Java\JDK8_32\jre" erroronmissingdir="false"></fileset>
                                 </copy>
                                 <copy todir="${dist}/jre/bin/" overwrite="true" >
                                     <fileset dir="${project.basedir}/lib/x86/" erroronmissingdir="false">

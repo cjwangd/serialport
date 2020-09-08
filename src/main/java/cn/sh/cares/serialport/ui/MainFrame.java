@@ -14,6 +14,7 @@ import javax.swing.event.PopupMenuListener;
 import cn.sh.cares.serialport.manager.SerialPortManager;
 import cn.sh.cares.serialport.model.ComboItem;
 import cn.sh.cares.serialport.utils.ByteUtils;
+import cn.sh.cares.serialport.utils.FileUtils;
 import cn.sh.cares.serialport.utils.ShowUtils;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
@@ -330,7 +331,9 @@ public class MainFrame extends JFrame {
 
                         // 以字符串的形式接收数据
                         if (mDataASCIIChoice.isSelected()) {
-                            mDataView.append(new String(data) + "\r\n");
+                            String recv = new String(data);
+                            mDataView.append(recv);
+                            FileUtils.writeFile(recv);
                         }
 
                         // 以十六进制的形式接收数据
