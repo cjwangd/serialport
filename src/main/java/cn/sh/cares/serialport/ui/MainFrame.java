@@ -332,6 +332,7 @@ public class MainFrame extends JFrame {
                         // 以字符串的形式接收数据
                         if (mDataASCIIChoice.isSelected()) {
                             String recv = new String(data);
+                            recv+="\r\n";
                             mDataView.append(recv);
                             FileUtils.writeFile(recv);
                         }
